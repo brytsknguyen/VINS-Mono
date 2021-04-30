@@ -1,0 +1,59 @@
+<launch>
+
+    <!-- ######### Enable the automatic change to new dataset ########### -->
+    <arg name="autorun"     default = "false" />
+
+
+    <!-- log direction for the vis aid -->
+    <arg name="log_dir" default="/home/$(env USER)/output/pose_graph" />
+
+
+    <!-- ######### Choose the dataset ################################### -->
+    <arg name="bag_file" default = "/media/tmn/myHPSSD/NTU_VIRAL/eee_01/eee_01.bag" />
+
+
+    <!-- VINS paths -->
+    <arg name="config_path" default = "$(find feature_tracker)/../config/ntuviral/viral_camera_imu_config.yaml" />
+    <arg name="vins_path" default = "$(find feature_tracker)/../config/../" />
+
+
+    <!-- Feature tracker -->
+    <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <param name="vins_folder" type="string" value="$(arg vins_path)" />
+    </node>
+
+
+    <!-- VINS node -->
+    <node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="screen">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <param name="vins_folder" type="string" value="$(arg vins_path)" />
+    </node>
+
+    <!-- Loop tracking -->
+    <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <param name="visualization_shift_x"  type="int" value="0" />
+        <param name="visualization_shift_y"  type="int" value="0" />
+        <param name="skip_cnt" type="int"    value="0" />
+        <param name="skip_dis" type="double" value="0" />
+        <param name="pose_graph_save_path" type="string" value="$(arg log_dir)/vins_ba_" />
+    </node>
+
+
+    <!-- Static Dataset -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_to_pointcloudframe1"
+          args="0 0 0 0 0 1.57 /camera /pointcloudframe" />
+
+
+    <!-- Run the rviz node -->
+    <node pkg="rviz" type="rviz" name="rviz" respawn="true"
+          args="-d $(find vins_estimator)/../config/ntuviral/rviz_ntuviral.rviz" />
+
+
+    <!-- ######### Play the dataset ###################################### -->
+    <param name ="/use_sim_time" value="true"/>
+    <node required="$(arg autorun)" pkg="rosbag" type="play" name="rosbag_play"
+          args="--clock $(arg bag_file)" output="log"/>
+
+</launch>

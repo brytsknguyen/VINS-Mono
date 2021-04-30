@@ -492,7 +492,7 @@ int main(int argc, char **argv)
         m_camera = camodocal::CameraFactory::instance()->generateCameraFromYamlFile(config_file.c_str());
 
         fsSettings["image_topic"] >> IMAGE_TOPIC;        
-        fsSettings["pose_graph_save_path"] >> POSE_GRAPH_SAVE_PATH;
+        n.param<std::string>("pose_graph_save_path", POSE_GRAPH_SAVE_PATH, "/home/tmn/output");
         fsSettings["output_path"] >> VINS_RESULT_PATH;
         fsSettings["save_image"] >> DEBUG_IMAGE;
 
@@ -546,8 +546,11 @@ int main(int argc, char **argv)
     measurement_process = std::thread(process);
     keyboard_command_process = std::thread(command);
 
-
     ros::spin();
+
+    m_process.lock();
+    posegraph.savePoseGraph();
+    m_process.unlock();
 
     return 0;
 }
