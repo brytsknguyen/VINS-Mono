@@ -1,0 +1,78 @@
+%YAML:1.0
+
+#common parameters
+imu_topic:   "/airsim_node/drone_0/imu/Imu"
+image_topic: "/airsim_node/drone_0/right/Scene"
+output_path: "/home/tmn/output"         # to save the pose graph
+
+#camera calibration 
+model_type:   PINHOLE
+camera_name:  camera
+image_width:  640
+image_height: 480
+distortion_parameters:
+   k1:  0.0
+   k2:  0.0
+   p1:  0.0
+   p2:  0.0
+projection_parameters:
+   fx: 320.0
+   fy: 320.0
+   cx: 320.0
+   cy: 240.0 
+
+# Extrinsic parameter between IMU and Camera.
+estimate_extrinsic: 1   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
+                        # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
+                        # 2  Don't know anything about extrinsic parameters. You don't need to give R,T. We will try to calibrate it. Do some rotation movement at beginning. 
+
+# If you choose 1 or 2, the extrinsic calibration result will be written vins_folder_path + ex_calib_result_path.
+# If you choose 0 or 1, you should write down the following matrix.
+ex_calib_result_path: "/config/A3/ex_calib_result.yaml"  
+
+#Rotation from camera frame to imu frame, imu^R_cam
+extrinsicRotation: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 0.0,  0.0, 1.0,
+           1.0,  0.0, 0.0,
+           0.0,  1.0, 0.0 ]
+
+extrinsicTranslation: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 0.3, 0.115, -0.15 ]
+
+#feature traker paprameters
+max_cnt: 150            # max feature number in feature tracking
+min_dist: 30            # min distance between two features 
+freq: 10                # frequence (Hz) of publish tracking result. At least 10Hz for good estimation. If set 0, the frequence will be same as raw image 
+F_threshold: 1.0        # ransac threshold (pixel)
+show_track: 1           # publish tracking image as topic
+equalize: 1             # if image is too dark or light, trun on equalize to find enough features
+fisheye: 0              # if using fisheye, trun on it. A circle mask will be loaded to remove edge noisy points
+
+#optimization parameters
+max_solver_time: 0.04  # max solver itration time (ms), to guarantee real time
+max_num_iterations: 8   # max solver itrations, to guarantee real time
+keyframe_parallax: 10.0 # keyframe selection threshold (pixel)
+
+#imu parameters       The more accurate parameters you provide, the better performance
+acc_n:  0.05          # accelerometer measurement noise standard deviation. 
+gyr_n:  0.002         # gyroscope measurement noise standard deviation.     
+acc_w:  0.001         # accelerometer bias random work noise standard deviation.  
+gyr_w:  0.0001        # gyroscope bias random work noise standard deviation.     
+g_norm: 9.81007       # gravity magnitude
+
+
+
+#loop closure parameters
+loop_closure: 1   #if you want to use loop closure to minimize the drift, set loop_closure true and give your brief pattern file path and vocabulary file path accordingly;
+                  #also give the camera calibration file same as feature_tracker node
+# pattern_file: "/support_files/brief_pattern.yml"
+# voc_file:     "/support_files/brief_k10L6.bin"
+min_loop_num: 25
+
+pose_graph_save_path: "/home/tmn/output/pose_graph/"  # save and load path
