@@ -1,0 +1,24 @@
+feature_tracker:
+  config_file: /home/tmn/dev_ws/src/VINS-Mono/feature_tracker/../config/ntuviral/viral_camera_imu_config.yaml
+  vins_folder: /home/tmn/dev_ws/src/VINS-Mono/feature_tracker/../config/../
+pose_graph:
+  config_file: /home/tmn/dev_ws/src/VINS-Mono/feature_tracker/../config/ntuviral/viral_camera_imu_config.yaml
+  pose_graph_save_path: /home/tmn/nucssd2/MATLAB_WS/RAL_edits/viralslam/RAL_VIRAL_SLAM/vins_mono/result_sbs_01_0anc_vis/vins_ba_
+  skip_cnt: 0
+  skip_dis: 0.0
+  visualization_shift_x: 0
+  visualization_shift_y: 0
+rosdistro: 'melodic
+
+  '
+roslaunch:
+  uris:
+    host_192_168_1_4__39725: http://192.168.1.4:39725/
+rosversion: '1.14.10
+
+  '
+run_id: 037a2188-a785-11eb-9d37-287fcf739439
+use_sim_time: true
+vins_estimator:
+  config_file: /home/tmn/dev_ws/src/VINS-Mono/feature_tracker/../config/ntuviral/viral_camera_imu_config.yaml
+  vins_folder: /home/tmn/dev_ws/src/VINS-Mono/feature_tracker/../config/../
